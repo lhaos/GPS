@@ -15,6 +15,8 @@ public class Main {
 	public static void main(String[] args) throws FileNotFoundException {
 		
 		reader();
+		Gps gps = new Gps(stops, trips, -30.067852, -51.161605, -30.030795, -51.226331, 744.0);
+		gps.start();
 
 	}//close main
 	
@@ -36,7 +38,7 @@ public class Main {
 		
 		System.out.println("Calculando rota.......");
 		GTFSReader.loadStopTimes("bin/arquivos/stop_times.txt", trips, stops);
-		System.out.println("Rota calculada!");
+		System.out.println("Rota calculada!\n");
 	}//close files reader
 
 }//close class
