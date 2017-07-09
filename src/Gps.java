@@ -44,29 +44,52 @@ public class Gps {
 
 	private void calcTravel(List<Stop> initalStop, Stop finalStop, List<Trip> travelList, double limite,
 			GPSCoordinate origem) {
-		boolean found = takeRoute(initalStop, travelList, limite);
+		boolean found = takeRoute(initalStop, travelList, smallLimit);
 		
-		if(found){
-			showResult();
-		}else{
-			System.out.println("PRECISA DE MAIS ROTAS");
+		if(!found){
+			takeBreakRoute(origem, limite, travelList, finalStop);
 		}
 		
 	}
-	
+
 	private boolean takeRoute(List<Stop> initalStop, List<Trip> travelList, double limite) {
 		Boolean found = false;
 		
 		for (Trip t : travelList) {
 			for (Stop s : initalStop) {
-				if (t.hasStopNear(s.getGPSCoordinate(), smallLimit)) { 
-					append("LINHA: " + t.getRoute().getLongName() + " - " + t.getRoute().getShortName()
-							+ "\nPARADA: " + s.getName());
+				if (t.hasStopNear(s.getGPSCoordinate(), limite)) { 
+					System.out.println("OPÇÕES MAIS PRÓXIMAS DE VOCÊ:\n");
+					System.out.println("LINHA: " + t.getRoute().getLongName() + " - " + t.getRoute().getShortName());
+					System.out.println("PARADA: "+s.getName());
 					found = true;
 				}
 			}
 		}
 		return found;
+	}
+	
+	private void takeBreakRoute(GPSCoordinate origem, double limite, List<Trip> travelList, Stop finalStop) {
+		List<Trip> closeTrip = listTrip(origem, limite, trips); 
+		
+		for (Map.Entry<String, Stop> s : stops.entrySet()) { 
+			Stop stop = s.getValue();
+			for (Trip t : travelList) { 
+				if (t.hasStopNear(stop.getGPSCoordinate(), limite)) { 
+					for (Trip ctrip : closeTrip) {
+						if (ctrip.hasStopNear(stop.getGPSCoordinate(), limite)) { 
+							Stop originStop = finalStop(origem, stops); 
+							Trip finalTrip = travelList.get(travelList.size() - 1);
+							System.out.println("OPÇÕES MAIS PRÓXIMAS DE VOCÊ:\n");
+							System.out.println("PARTIDA NA LINHA " + ctrip.getRoute().getShortName() + " | PARADA: " + originStop.getName());
+							System.out.println("DESCER NA PARADA: " + stop.getName());
+							System.out.println("EMBARCAR NA LINHA: " + finalTrip.getRoute().getShortName());
+							System.out.println("DESCER NA PARADA: " + finalStop.getName());
+							return;
+						}
+					}
+				} 
+			} 
+		}
 	}
 
 	private List<Stop> listStops(GPSCoordinate origem, Map<String, Stop> stops, double limite) {
@@ -147,7 +170,7 @@ public class Gps {
 	}
 	
 	private void showResult(){
-		System.out.println("OPÇÕES MAIS PRÓXIMAS DE VOCÊ:\n");
+		
 		for(int i = 0; i < numElementos; i++){
 			System.out.println(resultados[i]+"\n");
 		}

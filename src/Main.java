@@ -15,7 +15,7 @@ public class Main {
 	public static void main(String[] args) throws FileNotFoundException {
 		
 		reader();
-		Gps gps = new Gps(stops, trips, -30.067852, -51.161605, -30.030795, -51.226331, 744.0);
+		Gps gps = new Gps(stops, trips, -30.067852, -51.161605, -30.022673, -51.195715, 744.0);
 		gps.start();
 
 	}//close main
