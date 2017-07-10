@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import smartcity.gtfs.*;
 import smartcity.util.*;
 
@@ -12,10 +11,7 @@ public class Gps {
 	private Double latFinal;
 	private Double longFinal;
 	private double limite;
-	private String[] resultados = new String[20];
-	private int numElementos = 0;
 	private double smallLimit;
-	
 	private Map<String,Stop> stops;
 	private Map<String,Trip> trips;
 	
@@ -45,16 +41,13 @@ public class Gps {
 	private void calcTravel(List<Stop> initalStop, Stop finalStop, List<Trip> travelList, double limite,
 			GPSCoordinate origem) {
 		boolean found = takeRoute(initalStop, travelList, smallLimit);
-		
 		if(!found){
 			takeBreakRoute(origem, limite, travelList, finalStop);
 		}
-		
 	}
 
 	private boolean takeRoute(List<Stop> initalStop, List<Trip> travelList, double limite) {
 		Boolean found = false;
-		
 		for (Trip t : travelList) {
 			for (Stop s : initalStop) {
 				if (t.hasStopNear(s.getGPSCoordinate(), limite)) { 
@@ -70,7 +63,6 @@ public class Gps {
 	
 	private void takeBreakRoute(GPSCoordinate origem, double limite, List<Trip> travelList, Stop finalStop) {
 		List<Trip> closeTrip = listTrip(origem, limite, trips); 
-		
 		for (Map.Entry<String, Stop> s : stops.entrySet()) { 
 			Stop stop = s.getValue();
 			for (Trip t : travelList) { 
@@ -80,10 +72,9 @@ public class Gps {
 							Stop originStop = finalStop(origem, stops); 
 							Trip finalTrip = travelList.get(travelList.size() - 1);
 							System.out.println("OPÇÕES MAIS PRÓXIMAS DE VOCÊ:\n");
-							System.out.println("PARTIDA NA LINHA " + ctrip.getRoute().getShortName() + " | PARADA: " + originStop.getName());
-							System.out.println("DESCER NA PARADA: " + stop.getName());
-							System.out.println("EMBARCAR NA LINHA: " + finalTrip.getRoute().getShortName());
-							System.out.println("DESCER NA PARADA: " + finalStop.getName());
+							System.out.println("LINHA: " + ctrip.getRoute().getLongName()  + " - " + ctrip.getRoute().getShortName() + "\nPARADA: " + originStop.getName());
+							System.out.println("DESÇA NA PARADA: " + stop.getName());
+							System.out.println("EMBARQUE NA LINHA: " + finalTrip.getRoute().getShortName());
 							return;
 						}
 					}
@@ -114,7 +105,6 @@ public class Gps {
 	private Stop finalStop(GPSCoordinate destino, Map<String, Stop> stops) {
 		Stop finalStop = new Stop("","",0,0);
 		Double maxValue = Double.MAX_VALUE;
-		
 		for(Map.Entry<String, Stop> stop : stops.entrySet()){
 			GPSCoordinate coordinate = stop.getValue().getGPSCoordinate();
 			Double distance = destino.distance(coordinate);
@@ -137,43 +127,6 @@ public class Gps {
 			}
 		}
 		return listTrip;
-	}
-	
-	private void moreSpace() {
-		if (numElementos >= resultados.length) {
-			String[] novo = new String[resultados.length * 2];
-			for (int i = 0; i < resultados.length; i++) {
-				novo[i] = resultados[i];
-			} 
-			resultados = novo;
-		} 
-	}
-	
-	private void append(String info) {
-		moreSpace();
-		if(!validInfo(info)){
-			resultados[numElementos] = info;
-			numElementos++;
-		}
-	}
-	
-	private boolean validInfo(String info) {
-		if (numElementos > 0) {
-			for (int i = 0; i < numElementos; i++) {
-				if (resultados[i].equals(info)) {
-					return true;
-				}
-			}
-
-		}
-		return false;
-	}
-	
-	private void showResult(){
-		
-		for(int i = 0; i < numElementos; i++){
-			System.out.println(resultados[i]+"\n");
-		}
 	}
 	
 }//close class
